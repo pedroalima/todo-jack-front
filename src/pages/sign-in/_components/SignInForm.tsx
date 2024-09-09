@@ -2,31 +2,25 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { AuthContext } from "@/contexts/AuthContext";
+import { useContext } from "react";
 import { useForm } from "react-hook-form";
 
+type SignInType = {
+  email: string;
+  password: string;
+};
+
 export default function SignInForm() {
+  const { handleSubmit, register } = useForm<SignInType>();
+  const { signIn } = useContext(AuthContext);
   //   const { toast } = useToast();
-  const form = useForm();
   //   const [submitted, setSubmitted] = useState(false);
   //   const [email, setEmail] = useState("");
 
-  const handleSubmit = form.handleSubmit(async (data) => {
-    console.log(data);
-    // try {
-    //   await signIn("nodemailer", { email: data.email, redirect: false });
-    //   toast({
-    //     title: "Magic Link Sent",
-    //     description: "Check your email for the magic link to login.",
-    //   });
-    //   setEmail(data.email);
-    //   setSubmitted(true);
-    // } catch (error) {
-    //   toast({
-    //     title: "Error",
-    //     description: "An error occurred. Please try again.",
-    //   });
-    // }
-  });
+  function handleSignIn({ email, password }: SignInType) {
+    signIn({ email, password });
+  }
 
   return (
     <div className="flex min-h-[100dvh] items-center justify-center bg-background px-4 py-12 sm:px-6 lg:px-8">
@@ -45,7 +39,7 @@ export default function SignInForm() {
             </a>
           </p>
         </div>
-        <form className="space-y-6" onSubmit={handleSubmit}>
+        <form className="space-y-6" onSubmit={handleSubmit(handleSignIn)}>
           <div>
             <Label htmlFor="email" className="sr-only">
               Email address
@@ -57,7 +51,7 @@ export default function SignInForm() {
               required
               autoComplete="email"
               className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm"
-              {...form.register("email")}
+              {...register("email")}
             />
           </div>
           <div>
@@ -71,7 +65,7 @@ export default function SignInForm() {
               required
               autoComplete="current-password"
               className="relative block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:z-10 focus:border-primary focus:outline-none focus:ring-primary sm:text-sm"
-              {...form.register("password")}
+              {...register("password")}
             />
           </div>
           <div className="flex items-center justify-between">
