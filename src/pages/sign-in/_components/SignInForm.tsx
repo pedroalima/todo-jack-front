@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { AuthContext } from "@/contexts/AuthContext";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 type SignInType = {
   email: string;
@@ -12,12 +13,14 @@ type SignInType = {
 };
 
 export default function SignInForm() {
+  const route = useNavigate();
   const { handleSubmit, register } = useForm<SignInType>();
   const { signIn } = useContext(AuthContext);
   //   const { toast } = useToast();
 
   async function handleSignIn({ email, password }: SignInType) {
     await signIn({ email, password });
+    route("/dashboard");
   }
 
   return (

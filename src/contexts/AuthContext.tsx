@@ -47,8 +47,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       maxAge: 60 * 60 * 1, // 1 hour
     });
     setUser(user);
-
-    window.location.href = "/dashboard";
   }
 
   return (
