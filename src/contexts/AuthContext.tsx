@@ -1,21 +1,21 @@
-import { api } from "@/services/axiosConfig";
+import { getUser, loginUser } from "@/services/UserService";
 import { parseCookies, setCookie } from "nookies";
 import { createContext, ReactNode, useEffect, useState } from "react";
+
+export type SignInType = {
+  email: string;
+  password: string;
+};
+
+export type UserType = {
+  email: string;
+  name: string;
+};
 
 type AuthContextType = {
   isAuthenticated: boolean;
   user: UserType | undefined;
   signIn: ({ email, password }: SignInType) => Promise<void>;
-};
-
-type SignInType = {
-  email: string;
-  password: string;
-};
-
-type UserType = {
-  email: string;
-  name: string;
 };
 
 export const AuthContext = createContext({} as AuthContextType);
@@ -29,19 +29,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (token) {
       (async () => {
-        const response = await api.get("/user/data");
-        setUser(response.data);
+        const userData = await getUser();
+        setUser(userData);
       })();
     }
   }, []);
 
   async function signIn({ email, password }: SignInType) {
-    const response = await api.post("/login", {
-      email,
-      password,
-    });
-
-    const { access_token, user } = await response.data;
+    const { access_token, user } = await loginUser({ email, password });
 
     setCookie(undefined, "jack_token", access_token, {
       maxAge: 60 * 60 * 1, // 1 hour
