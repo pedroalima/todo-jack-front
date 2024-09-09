@@ -9,32 +9,72 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-export default function SignUpForm() {
-  const form = useForm();
+type SignUpType = {
+  name: string;
+  email: string;
+  password: string;
+  confirm_password: string;
+};
 
-  const handleSubmit = form.handleSubmit(async (data) => {
+export default function SignUpForm() {
+  const { handleSubmit, register, watch } = useForm<SignUpType>();
+  const [passwordMismatch, setPasswordMismatch] = useState<string | null>(null);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  const passwordPattern =
+    /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
+  const [passwordWeak, setPasswordWeak] = useState<string | null>(null);
+
+  useEffect(() => {
+    const subscription = watch((data, { name }) => {
+      if (name === "password" || name === "confirm_password") {
+        if (data.password !== data.confirm_password) {
+          setPasswordMismatch("Passwords do not match");
+        } else {
+          setPasswordMismatch(null);
+        }
+        if (data.password && !passwordPattern.test(data.password)) {
+          setPasswordWeak("Password is weak. Example: Abc@123");
+        } else {
+          setPasswordWeak(null);
+        }
+      }
+      if (name === "email") {
+        if (data.email && !emailPattern.test(data.email)) {
+          setEmailError("Invalid email format");
+        } else {
+          setEmailError(null);
+        }
+      }
+    });
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  function handleSignUp(data: SignUpType) {
+    if (data.password !== data.confirm_password) {
+      setPasswordMismatch("Passwords do not match");
+      return;
+    }
+
+    if (!emailPattern.test(data.email)) {
+      setEmailError("Invalid email format");
+      return;
+    }
+
+    if (!passwordPattern.test(data.password)) {
+      setPasswordWeak("Password is weak.");
+      return;
+    }
+
     console.log(data);
-    // try {
-    //   await signIn("nodemailer", { email: data.email, redirect: false });
-    //   toast({
-    //     title: "Magic Link Sent",
-    //     description: "Check your email for the magic link to login.",
-    //   });
-    //   setEmail(data.email);
-    //   setSubmitted(true);
-    // } catch (error) {
-    //   toast({
-    //     title: "Error",
-    //     description: "An error occurred. Please try again.",
-    //   });
-    // }
-  });
+  }
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(handleSignUp)}
       className="flex min-h-screen flex-col items-center justify-center bg-background"
     >
       <Card className="w-full max-w-md">
@@ -55,11 +95,7 @@ export default function SignUpForm() {
         <CardContent className="space-y-4">
           <div className="grid gap-2">
             <Label htmlFor="name">Name</Label>
-            <Input
-              id="name"
-              placeholder="John Doe"
-              {...form.register("name")}
-            />
+            <Input id="name" placeholder="John Doe" {...register("name")} />
           </div>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -67,28 +103,36 @@ export default function SignUpForm() {
               id="email"
               type="email"
               placeholder="m@example.com"
-              {...form.register("email")}
+              {...register("email")}
             />
+            {emailError && (
+              <span className="text-red-500 text-sm">{emailError}</span>
+            )}
           </div>
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
               <Label htmlFor="password">Password</Label>
             </div>
-            <Input
-              id="password"
-              type="password"
-              {...form.register("password")}
-            />
+            <Input id="password" type="password" {...register("password")} />
+            {passwordWeak && (
+              <span className="text-red-500 text-sm">{passwordWeak}</span>
+            )}
           </div>
           <div className="grid gap-2">
             <div className="flex items-center justify-between">
-              <Label htmlFor="confirm-password">Confirm Password</Label>
+              <Label htmlFor="confirm-password" className="text-left">
+                Confirm Password
+              </Label>
             </div>
             <Input
-              id="confirm-password"
+              id="confirm_password"
               type="password"
-              {...form.register("confirm-password")}
+              {...register("confirm_password")}
+              className="mb-2"
             />
+            {passwordMismatch && (
+              <span className="text-red-500 text-sm">{passwordMismatch}</span>
+            )}
           </div>
         </CardContent>
         <CardFooter>
