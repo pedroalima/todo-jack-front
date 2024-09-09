@@ -15,11 +15,9 @@ export default function SignInForm() {
   const { handleSubmit, register } = useForm<SignInType>();
   const { signIn } = useContext(AuthContext);
   //   const { toast } = useToast();
-  //   const [submitted, setSubmitted] = useState(false);
-  //   const [email, setEmail] = useState("");
 
-  function handleSignIn({ email, password }: SignInType) {
-    signIn({ email, password });
+  async function handleSignIn({ email, password }: SignInType) {
+    await signIn({ email, password });
   }
 
   return (

@@ -26,7 +26,8 @@ import {
 } from "@/components/ui/table";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { useMemo, useState } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
+import { useContext, useMemo, useState } from "react";
 import { FaCheck, FaPlusCircle, FaTrashAlt, FaUndo } from "react-icons/fa";
 import { FaFilePen } from "react-icons/fa6";
 import { TbProgressCheck } from "react-icons/tb";
@@ -40,6 +41,7 @@ interface TasksType {
 }
 
 export function DashboardPage() {
+  const { user } = useContext(AuthContext);
   const [tasks, setTasks] = useState<TasksType[]>([
     {
       id: 1,
@@ -143,6 +145,7 @@ export function DashboardPage() {
         <div className="grid gap-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-bold">Tasks</h2>
+            <span>Olá {user?.name}</span>
             <Button
               onClick={() =>
                 setEditingTask({

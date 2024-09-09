@@ -1,8 +1,10 @@
-import { setCookie } from "nookies";
-import { createContext, ReactNode } from "react";
+import { api } from "@/services/axiosConfig";
+import { parseCookies, setCookie } from "nookies";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
 type AuthContextType = {
   isAuthenticated: boolean;
+  user: UserType | undefined;
   signIn: ({ email, password }: SignInType) => Promise<void>;
 };
 
@@ -11,39 +13,46 @@ type SignInType = {
   password: string;
 };
 
+type UserType = {
+  email: string;
+  name: string;
+};
+
 export const AuthContext = createContext({} as AuthContextType);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const isAuthenticated = false;
+  const [user, setUser] = useState<UserType | undefined>();
+  const isAuthenticated = !!user;
+
+  useEffect(() => {
+    const { jack_token: token } = parseCookies();
+
+    if (token) {
+      (async () => {
+        const response = await api.get("/user/data");
+        setUser(response.data);
+      })();
+    }
+  }, []);
 
   async function signIn({ email, password }: SignInType) {
-    try {
-      const response = await fetch("http://localhost:3000/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+    const response = await api.post("/login", {
+      email,
+      password,
+    });
 
-      if (!response.ok) {
-        throw new Error("Login failed");
-      }
+    const { access_token, user } = await response.data;
 
-      const data = await response.json();
-      setCookie(undefined, "jack_token", data.access_token, {
-        maxAge: 60 * 60 * 1, // 1 hour
-      });
-      // Handle successful login here
-      console.log("Login successful:", data);
-    } catch (error) {
-      console.error("Login error:", error);
-      // Handle login error here
-    }
+    setCookie(undefined, "jack_token", access_token, {
+      maxAge: 60 * 60 * 1, // 1 hour
+    });
+    setUser(user);
+
+    window.location.href = "/dashboard";
   }
 
   return (
-    <AuthContext.Provider value={{ isAuthenticated, signIn }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, signIn }}>
       {children}
     </AuthContext.Provider>
   );
