@@ -27,89 +27,53 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { AuthContext } from "@/contexts/AuthContext";
+import { TaskContext, TasksType } from "@/contexts/TaskContext";
 import { useContext, useMemo, useState } from "react";
 import { FaCheck, FaPlusCircle, FaTrashAlt, FaUndo } from "react-icons/fa";
 import { FaFilePen } from "react-icons/fa6";
 import { TbProgressCheck } from "react-icons/tb";
 
-interface TasksType {
-  id: number;
-  title: string;
-  description: string;
-  dueDate: string;
-  status: string;
-}
-
 export function DashboardPage() {
+  const {
+    tasks = [],
+    setTasks,
+    fetchCreateTask,
+    fetchUpdateTask,
+    fetchDeleteTask,
+  } = useContext(TaskContext);
   const { user } = useContext(AuthContext);
-  const [tasks, setTasks] = useState<TasksType[]>([
-    {
-      id: 1,
-      title: "Finish project proposal",
-      description: "Write up the project proposal and send it to the client",
-      dueDate: "2023-06-30",
-      status: "todo",
-    },
-    {
-      id: 2,
-      title: "Attend team meeting",
-      description: "Discuss project progress with the team",
-      dueDate: "2023-06-15",
-      status: "in progress",
-    },
-    {
-      id: 3,
-      title: "Design new landing page",
-      description: "Create a new design for the company website landing page",
-      dueDate: "2023-07-15",
-      status: "todo",
-    },
-    {
-      id: 4,
-      title: "Implement new feature",
-      description: "Add the new feature to the application",
-      dueDate: "2023-08-01",
-      status: "in progress",
-    },
-    {
-      id: 5,
-      title: "Write blog post",
-      description: "Publish a new blog post on the company website",
-      dueDate: "2023-06-20",
-      status: "completed",
-    },
-  ]);
   const [editingTask, setEditingTask] = useState<TasksType | null>(null);
   const [activeTab, setActiveTab] = useState("all");
-  const handleCreateTask = () => {
+
+  const handleCreateTask = async () => {
     if (editingTask) {
-      const newId = Math.max(...tasks.map((task) => task.id), 0) + 1;
-      const newTask: TasksType = {
-        id: newId,
+      const newTask: Omit<TasksType, "id"> = {
         title: editingTask.title || "",
         description: editingTask.description || "",
         dueDate: editingTask.dueDate || "",
         status: editingTask.status || "todo",
       };
-      setTasks([...tasks, newTask]);
+      await fetchCreateTask(newTask);
       setEditingTask(null);
     }
   };
+
   const handleEditTask = (task: TasksType) => {
     setEditingTask(task);
   };
-  const handleUpdateTask = () => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === editingTask?.id ? { ...task, ...editingTask } : task
-      )
-    );
-    setEditingTask(null);
+
+  const handleUpdateTask = async () => {
+    if (editingTask) {
+      await fetchUpdateTask(editingTask.id, editingTask);
+      setEditingTask(null);
+    }
   };
-  const handleDeleteTask = (id: number) => {
-    setTasks(tasks.filter((task) => task.id !== id));
+
+  const handleDeleteTask = async (id: string) => {
+    await fetchDeleteTask(id);
   };
-  const handleChangeStatus = (id: number) => {
+
+  const handleChangeStatus = (id: string) => {
     setTasks(
       tasks.map((task) => {
         if (task.id === id) {
@@ -149,7 +113,7 @@ export function DashboardPage() {
             <Button
               onClick={() =>
                 setEditingTask({
-                  id: 0,
+                  id: "",
                   title: "",
                   description: "",
                   dueDate: "",

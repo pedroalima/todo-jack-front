@@ -1,3 +1,4 @@
+import { TaskProvider } from "@/contexts/TaskContext";
 import { SignInPage } from "@/pages/sign-in";
 import SignUpPage from "@/pages/sign-up";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
@@ -38,7 +39,9 @@ function AppRoutes() {
           path="/dashboard"
           element={
             <PrivateRoute>
-              <DashboardPage />
+              <TaskProvider>
+                <DashboardPage />
+              </TaskProvider>
             </PrivateRoute>
           }
         />

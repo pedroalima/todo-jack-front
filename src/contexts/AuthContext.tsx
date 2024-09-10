@@ -1,4 +1,4 @@
-import { getUser, loginUser } from "@/services/UserService";
+import { getUser, loginUser } from "@/services/userService";
 import { parseCookies, setCookie } from "nookies";
 import { createContext, ReactNode, useEffect, useState } from "react";
 
