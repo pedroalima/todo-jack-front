@@ -9,10 +9,11 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useEffect, useState } from "react";
+import { AuthContext } from "@/contexts/AuthContext";
+import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 
-type SignUpType = {
+type SignUpFormType = {
   name: string;
   email: string;
   password: string;
@@ -20,13 +21,14 @@ type SignUpType = {
 };
 
 export default function SignUpForm() {
-  const { handleSubmit, register, watch } = useForm<SignUpType>();
+  const { handleSubmit, register, watch } = useForm<SignUpFormType>();
   const [passwordMismatch, setPasswordMismatch] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
   const passwordPattern =
     /((?=.*\d)|(?=.*\W+))(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
   const [passwordWeak, setPasswordWeak] = useState<string | null>(null);
+  const { signUp } = useContext(AuthContext);
 
   useEffect(() => {
     const subscription = watch((data, { name }) => {
@@ -53,7 +55,7 @@ export default function SignUpForm() {
     return () => subscription.unsubscribe();
   }, [watch]);
 
-  function handleSignUp(data: SignUpType) {
+  async function handleSignUp(data: SignUpFormType) {
     if (data.password !== data.confirm_password) {
       setPasswordMismatch("Passwords do not match");
       return;
@@ -68,6 +70,8 @@ export default function SignUpForm() {
       setPasswordWeak("Password is weak.");
       return;
     }
+
+    await signUp(data)
 
     console.log(data);
   }

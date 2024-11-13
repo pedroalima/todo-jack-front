@@ -1,10 +1,16 @@
-import { getUser, loginUser } from "@/services/userService";
+import { createUser, getUser, loginUser } from "@/services/UserService";
 import { parseCookies, setCookie } from "nookies";
 import { createContext, ReactNode, useEffect, useState } from "react";
 
 export type SignInType = {
   email: string;
   password: string;
+};
+
+export type SignUpType = {
+  email: string;
+  password: string;
+  name: string;
 };
 
 export type UserType = {
@@ -16,6 +22,7 @@ type AuthContextType = {
   isAuthenticated: boolean;
   user: UserType | undefined;
   signIn: ({ email, password }: SignInType) => Promise<void>;
+  signUp: ({ email, name, password }: SignUpType) => Promise<void>;
 };
 
 export const AuthContext = createContext({} as AuthContextType);
@@ -44,8 +51,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(user);
   }
 
+  async function signUp({ email, name, password } : SignUpType) {
+    const response = await createUser({ email, password, name});
+
+    console.log(response)
+  }
+
   return (
-    <AuthContext.Provider value={{ isAuthenticated, user, signIn }}>
+    <AuthContext.Provider value={{ isAuthenticated, user, signIn, signUp }}>
       {children}
     </AuthContext.Provider>
   );
