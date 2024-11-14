@@ -19,8 +19,14 @@ export default function SignInForm() {
   //   const { toast } = useToast();
 
   async function handleSignIn({ email, password }: SignInType) {
-    await signIn({ email, password });
-    route("/dashboard");
+    try {
+      await signIn({ email, password });
+      console.log(localStorage.getItem('jack_token'));
+    } catch (error) {
+      console.log(error)
+    } finally {
+      route("/dashboard");
+    }
   }
 
   return (

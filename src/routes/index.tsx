@@ -1,9 +1,9 @@
 import { TaskProvider } from "@/contexts/TaskContext";
+import { HomePage } from "@/pages/Home";
 import { SignInPage } from "@/pages/sign-in";
 import SignUpPage from "@/pages/sign-up";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { DashboardPage } from "../pages/dashboard";
-import { HomePage } from "../pages/home";
 import PrivateRoute from "./privateRoute";
 import PublicRoute from "./publicRoutes";
 

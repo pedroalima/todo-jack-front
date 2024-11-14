@@ -31,6 +31,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<UserType | undefined>();
   const isAuthenticated = !!user;
 
+  async function signIn({ email, password }: SignInType) {
+    const { access_token, user } = await loginUser({ email, password });
+
+    setCookie(undefined, "jack_token", access_token, {
+      maxAge: 60 * 60 * 1, // 1 hour
+    });
+    
+    setUser(user);
+  }
+
+  async function signUp({ email, name, password } : SignUpType) {
+    await createUser({ email, password, name});
+  }
+
   useEffect(() => {
     const { jack_token: token } = parseCookies();
 
@@ -41,21 +55,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       })();
     }
   }, []);
-
-  async function signIn({ email, password }: SignInType) {
-    const { access_token, user } = await loginUser({ email, password });
-
-    setCookie(undefined, "jack_token", access_token, {
-      maxAge: 60 * 60 * 1, // 1 hour
-    });
-    setUser(user);
-  }
-
-  async function signUp({ email, name, password } : SignUpType) {
-    const response = await createUser({ email, password, name});
-
-    console.log(response)
-  }
 
   return (
     <AuthContext.Provider value={{ isAuthenticated, user, signIn, signUp }}>

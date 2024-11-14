@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { AuthContext } from "@/contexts/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 
 type SignUpFormType = {
   name: string;
@@ -21,6 +22,7 @@ type SignUpFormType = {
 };
 
 export default function SignUpForm() {
+  const route = useNavigate();
   const { handleSubmit, register, watch } = useForm<SignUpFormType>();
   const [passwordMismatch, setPasswordMismatch] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -71,9 +73,13 @@ export default function SignUpForm() {
       return;
     }
 
-    await signUp(data)
-
-    console.log(data);
+    try {
+      await signUp(data);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      route("/sign-in");
+    }
   }
 
   return (
