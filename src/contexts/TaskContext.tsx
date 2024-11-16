@@ -29,7 +29,6 @@ export function TaskProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
       const fetchTasks = async () => {
-        await new Promise(resolve => setTimeout(resolve, 1000));
         const task = await getTasks();
         setTasks(task);
       }

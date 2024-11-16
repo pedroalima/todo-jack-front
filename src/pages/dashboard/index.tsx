@@ -130,6 +130,8 @@ export function DashboardPage() {
     });
   }, [tasks, editingTask, activeTab]);
 
+  const safeFilteredTasks = Array.isArray(filteredTasks) ? filteredTasks : [];
+
   return (
     <div className="flex flex-col h-screen">
       <header className="bg-primary text-primary-foreground py-4 px-6 flex justify-between">
@@ -183,7 +185,7 @@ export function DashboardPage() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredTasks.map((task) => (
+                    {safeFilteredTasks.map((task) => (
                       <TableRow key={task.id}>
                         <TableCell>{task.title}</TableCell>
                         <TableCell>{task.description}</TableCell>

@@ -37,7 +37,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCookie(undefined, "jack_token", access_token, {
       maxAge: 60 * 60 * 1, // 1 hour
     });
-    
     setUser(user);
   }
 

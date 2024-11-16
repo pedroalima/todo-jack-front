@@ -20,7 +20,6 @@ export default function SignInForm() {
   async function handleSignIn({ email, password }: SignInType) {
     try {
       await signIn({ email, password });
-      console.log(localStorage.getItem('jack_token'));
     } catch (error) {
       console.log(error)
     } finally {
