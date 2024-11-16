@@ -28,10 +28,12 @@ export function TaskProvider({ children }: { children: ReactNode }) {
   const [tasks, setTasks] = useState<TasksType[] | []>([]);
 
   useEffect(() => {
-    (async () => {
-      const task = await getTasks();
-      setTasks(task);
-    })();
+      const fetchTasks = async () => {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const task = await getTasks();
+        setTasks(task);
+      }
+      fetchTasks();
   }, []);
 
   async function fetchCreateTask(data: Omit<TasksType, "id">) {

@@ -29,10 +29,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { AuthContext } from "@/contexts/AuthContext";
 import { TaskContext, TasksType } from "@/contexts/TaskContext";
 import { useToast } from "@/hooks/use-toast";
+import { destroyCookie } from "nookies";
 import { useContext, useMemo, useState } from "react";
 import { FaCheck, FaPlusCircle, FaTrashAlt, FaUndo } from "react-icons/fa";
 import { FaFilePen } from "react-icons/fa6";
+import { FiLogOut } from "react-icons/fi";
 import { TbProgressCheck } from "react-icons/tb";
+import { useNavigate } from "react-router-dom";
 
 export function DashboardPage() {
   const {
@@ -46,6 +49,7 @@ export function DashboardPage() {
   const [editingTask, setEditingTask] = useState<TasksType | null>(null);
   const [activeTab, setActiveTab] = useState("all");
   const { toast } = useToast();
+  const route = useNavigate()
 
   const handleCreateTask = async () => {
     if (editingTask) {
@@ -109,6 +113,11 @@ export function DashboardPage() {
     );
   };
 
+  const handleLogout = () => {
+    destroyCookie(undefined, "jack_token")
+    route("/sign-in")
+  }
+
   const filteredTasks = useMemo(() => {
     if (activeTab === "all") {
       return tasks;
@@ -123,8 +132,16 @@ export function DashboardPage() {
 
   return (
     <div className="flex flex-col h-screen">
-      <header className="bg-primary text-primary-foreground py-4 px-6">
+      <header className="bg-primary text-primary-foreground py-4 px-6 flex justify-between">
         <h1 className="text-2xl font-bold">Task Management</h1>
+        <Button
+                                size="icon"
+                                variant="ghost"
+                                onClick={() => handleLogout()}
+                                className="bg-red-400"
+                              >
+                                <FiLogOut className="w-5 h-5" />
+                              </Button>
       </header>
       <main className="flex-1 p-6 grid gap-6">
         <div className="grid gap-4">
