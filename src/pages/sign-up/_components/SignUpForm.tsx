@@ -10,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AuthContext } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import { useContext, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +24,7 @@ type SignUpFormType = {
 
 export default function SignUpForm() {
   const route = useNavigate();
+  const { toast } = useToast();
   const { handleSubmit, register, watch } = useForm<SignUpFormType>();
   const [passwordMismatch, setPasswordMismatch] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
@@ -80,6 +82,12 @@ export default function SignUpForm() {
     } finally {
       route("/sign-in");
     }
+
+    toast({
+      title: "Sucesso!",
+      description: "Usuário registrado com sucesso!",
+      duration: 5000,
+    });
   }
 
   return (

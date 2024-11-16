@@ -28,6 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { AuthContext } from "@/contexts/AuthContext";
 import { TaskContext, TasksType } from "@/contexts/TaskContext";
+import { useToast } from "@/hooks/use-toast";
 import { useContext, useMemo, useState } from "react";
 import { FaCheck, FaPlusCircle, FaTrashAlt, FaUndo } from "react-icons/fa";
 import { FaFilePen } from "react-icons/fa6";
@@ -44,6 +45,7 @@ export function DashboardPage() {
   const { user } = useContext(AuthContext);
   const [editingTask, setEditingTask] = useState<TasksType | null>(null);
   const [activeTab, setActiveTab] = useState("all");
+  const { toast } = useToast();
 
   const handleCreateTask = async () => {
     if (editingTask) {
@@ -56,6 +58,12 @@ export function DashboardPage() {
       await fetchCreateTask(newTask);
       setEditingTask(null);
     }
+
+    toast({
+      title: "Sucesso!",
+      description: "Tarefa criada com sucesso!",
+      duration: 2000,
+    });
   };
 
   const handleEditTask = (task: TasksType) => {
@@ -67,10 +75,22 @@ export function DashboardPage() {
       await fetchUpdateTask(editingTask.id, editingTask);
       setEditingTask(null);
     }
+
+    toast({
+      title: "Sucesso!",
+      description: "Tarefa editada com sucesso!",
+      duration: 2000,
+    });
   };
 
   const handleDeleteTask = async (id: string) => {
     await fetchDeleteTask(id);
+
+    toast({
+      title: "Sucesso!",
+      description: "Tarefa excluída com sucesso!",
+      duration: 2000,
+    });
   };
 
   const handleChangeStatus = (id: string) => {
@@ -88,6 +108,7 @@ export function DashboardPage() {
       })
     );
   };
+
   const filteredTasks = useMemo(() => {
     if (activeTab === "all") {
       return tasks;

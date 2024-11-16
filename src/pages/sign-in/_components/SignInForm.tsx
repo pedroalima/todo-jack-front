@@ -16,7 +16,6 @@ export default function SignInForm() {
   const route = useNavigate();
   const { handleSubmit, register } = useForm<SignInType>();
   const { signIn } = useContext(AuthContext);
-  //   const { toast } = useToast();
 
   async function handleSignIn({ email, password }: SignInType) {
     try {
