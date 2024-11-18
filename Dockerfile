@@ -1,11 +1,15 @@
-FROM node:latest
+FROM node:18-alpine
 
 WORKDIR /usr/src/app
 
+COPY package.json .
+
+RUN npm install
+
 COPY . .
 
-RUN npm install --quiet --no-optional --no-fund --loglevel=error
+RUN npm run build
 
-EXPOSE 5173
+EXPOSE 5000
 
-CMD [ "npm", "run", "dev" ]
+CMD [ "npm", "run", "preview" ]
