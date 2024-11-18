@@ -19,7 +19,12 @@ export async function createTask(data: Omit<TasksType, "id">) {
 }
 
 export async function updateTask(id: string, data: Partial<TasksType>) {
-  const response = await api.patch(`/todo/${id}`, data);
+  const { jack_token: token } = parseCookies();
+  const response = await api.patch(`http://localhost:3000/todo/${id}`, data, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
   return response.data;
 }
 
