@@ -14,13 +14,18 @@ export async function getTasks() {
 }
 
 export async function createTask(data: Omit<TasksType, "id">) {
-  const response = await api.post("/todo", data);
+  const { jack_token: token } = parseCookies();
+  const response = await axios.post("http://localhost:3000/todo", data, {
+    headers: {
+      "Authorization": `Bearer ${token}`
+    }
+  });
   return response.data;
 }
 
 export async function updateTask(id: string, data: Partial<TasksType>) {
   const { jack_token: token } = parseCookies();
-  const response = await api.patch(`http://localhost:3000/todo/${id}`, data, {
+  const response = await axios.patch(`http://localhost:3000/todo/${id}`, data, {
     headers: {
       "Authorization": `Bearer ${token}`
     }
