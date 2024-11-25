@@ -1,4 +1,5 @@
 import { SignInType, SignUpType } from "@/contexts/AuthContext";
+import { parseCookies } from "nookies";
 import { api } from "./axiosConfig";
 
 export async function loginUser({ email, password }: SignInType) {
@@ -11,7 +12,12 @@ export async function loginUser({ email, password }: SignInType) {
 }
 
 export async function getUser() {
-  const response = await api.get("/user/data");
+  const { jack_token: token } = parseCookies();
+  const response = await api.get("/user/data", {
+    headers: {
+      "Authorization" : `Bearer ${token}`
+    }
+  });
 
   return response.data;
 }
