@@ -2,7 +2,7 @@
 
 Um gerenciador de tarefas (Task Management), com funcionalidades para organizar e monitorar atividades, Permite criar, visualizar, editar e excluir tarefas.
 
-<!-- A aplicação foi desenvolvida utilizando tecnologias como Node, Nest, SQLite, Prisma e Swagger.
+A aplicação foi desenvolvida utilizando tecnologias como TypeScript, React e TailwindCSS.
 
 ## Índice
 
@@ -24,55 +24,78 @@ Um gerenciador de tarefas (Task Management), com funcionalidades para organizar 
 
 ## Objetivos
 
-Esta API tem como objetivo fornecer funcionalidades essenciais para a gestão de usuários, autenticação e manipulação de tarefas. Ela está organizada em tres categorias principais:
+A aplicação tem como finalidade o gerenciamento de tarefas.
 
-- User: Gerenciamento de usuários e recuperação de dados pessoais.
-- Auth: Realização de login e autenticação segura.
-- Todo: Criação, consulta, atualização e exclusão de tarefas.
+Os usuários podem realizar as seguintes ações:
 
-> Utilizando o padrão OpenAPI (Swagger), para facilitar a documentação de todo o processo.
+- Registrar-se como um novo usuário;
+- Fazer login na aplicação;
+- Criar, atualizar e excluir tarefas;
+- Alterar o status de uma tarefa;
+- Filtrar tarefas por status.
 
 </br>
 
 ## Minha caminhada
 
-- [x] Criação inicial do projeto de desenvolvimento da API
-    - Criar o projeto com Nest CLI seguindo a estrutura MVC.
-    - Criar o schema no banco de dados utilizando Prisma e SQLite.
-- [x] Cadastro na plataforma
-    - Criar a tabela de usuário no banco de dados.
-    - Criar um endpoint POST para a criação do usuário.
-    - Implementar a regra de negócio para salvar o usuário.
-    - Registrar o usuário na base de dados.
-- [x] Login na aplicação
-    - Criar um endpoint GET para recuperar o usuário por e-mail e senha.
-    - Implementar a regra de negócio para realizar o login.
-    - Criar um endpoint POST para receber o e-mail e a senha.
-- [x] Gerar JWT access token
-    - Gerar um token de acesso JWT.
-    - Retornar token ao realizar o login.
-    - Criar um endpoint GET para recuperar o usuário logado.
-- [x] Registrar uma tarefa
-    - Criar uma migration no banco de dados para a tabela de tarefas
-    - Implementar a regra de negócio para criação de tarefas.
-- [x] Deletar tarefas
-    - Implementar a regra de negócio para deletar tarefas por ID.
-- [x] Atualizar tarefas
-    - Implementar a regra de negócio para atualizar tarefas por ID.
+[x] Configuração inicial do projeto
+- Configurar o projeto utilizando React (Vite).
+- Organizar a estrutura de pastas seguindo boas práticas.
+- Configurar gerenciador de estado (Context API).
+- Configurar o TailwindCSS.
+
+[x] Cadastro de usuários
+- Criar uma página de registro com campos para e-mail, nome e senha e confirmação de senha.
+- Implementar validações.
+- Conectar a página ao endpoint de cadastro (POST) via Axios.
+
+[x] Login na aplicação
+- Criar uma página de login com campos para e-mail e senha.
+- Conectar ao endpoint de login (POST) e armazenar o JWT token nos cookies.
+- Implementar redirecionamento para a página principal (Dashboard) após o login bem-sucedido.
+
+[x] Tela principal (Dashboard)
+- Criar uma página para exibir todas as tarefas do usuário.
+- Conectar ao endpoint GET para recuperar as tarefas do banco de dados.
+- Implementar filtros por status (todo, in progress, completed).
+- Exibir as tarefas em uma tabela.
+
+[x] Registro de tarefas
+- Criar um formulário para adicionar novas tarefas.
+- Conectar ao endpoint POST para criar uma tarefa.
+- Atualizar automaticamente a listagem de tarefas após a criação.
+
+[x] Atualização de tarefas
+- Adicionar funcionalidade para editar tarefas diretamente na listagem.
+- Conectar ao endpoint PATCH para atualizar a tarefa por ID.
+
+[x] Exclusão de tarefas
+- Adicionar funcionalidade para excluir tarefas.
+- Conectar ao endpoint DELETE para remover tarefas por ID.
+- Atualizar automaticamente a listagem após a exclusão bem-sucedida.
+
+[x] Autenticação e proteção de rotas
+- Proteger as rotas privadas verificando a presença do JWT token.
+- Redirecionar o usuário para a página de login caso não esteja autenticado.
+- Implementar funcionalidade de logout (remover o token e redirecionar para o login).
+
+[x] Melhorias visuais
+- Adicionar feedbacks visuais para interações do usuário.
 
 </br>
 
 ## Propriedades e Tecnologias
 
-- Node
-- Nest
-- SQLite
-- Prisma
-- Swagger
+- TypeScript
+- React (Vite)
+- TailwindCSS
+- Shadcn/ui
+- Axios
+- Prettier
 
 </br>
 
-## Meu aprendizado
+<!-- ## Meu aprendizado
 
 O processo de desenvolvimento da aplicação, esteve mais focado na implementação da autenticação.
 
