@@ -33,7 +33,6 @@ Os usuários podem realizar as seguintes ações:
 - Criar, atualizar e excluir tarefas;
 - Alterar o status de uma tarefa;
 - Filtrar tarefas por status.
-
 </br>
 
 ## Minha caminhada
@@ -81,7 +80,6 @@ Os usuários podem realizar as seguintes ações:
 
 [x] Melhorias visuais
 - Adicionar feedbacks visuais para interações do usuário.
-
 </br>
 
 ## Propriedades e Tecnologias
@@ -92,68 +90,73 @@ Os usuários podem realizar as seguintes ações:
 - Shadcn/ui
 - Axios
 - Prettier
-
 </br>
 
-<!-- ## Meu aprendizado
+## Meu aprendizado
 
 O processo de desenvolvimento da aplicação, esteve mais focado na implementação da autenticação.
 
-A autenticação foi uma das partes mais complexas do projeto, envolvendo o uso do JSON Web Token (JWT) para gerenciar o fluxo de login, geração e validação de tokens, além do controle de sessões.
+Implementar a autenticação no cliente exigiu um entendimento claro sobre como gerenciar o estado do usuário e proteger as rotas da aplicação. Aprendi a criar um fluxo de autenticação eficiente, onde usuários não autenticados eram redirecionados automaticamente para a página de login, enquanto os autenticados tinham acesso às áreas restritas. Utilizei o Context API do React, para centralizar as informações sobre o status de login do usuário.
 
 ```tsx
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { JwtModule } from '@nestjs/jwt';
-import { PassportModule } from '@nestjs/passport';
-import { UserModule } from '../user/user.module';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
-import { LoginValidationMiddleware } from './middlewares/login-validation.middleware';
-import { JwtStrategy } from './strategies/jwt.strategy';
-import { LocalStrategy } from './strategies/local.strategy';
+import { createUser, getUser, loginUser } from "@/services/UserService";
+import { parseCookies, setCookie } from "nookies";
+import { createContext, ReactNode, useEffect, useState } from "react";
 
-@Module({
-  imports: [
-    UserModule,
-    PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '30d' },
-    }),
-  ],
-  controllers: [AuthController],
-  providers: [AuthService, LocalStrategy, JwtStrategy],
-})
-export class AuthModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LoginValidationMiddleware).forRoutes('login');
+export type SignInType = {...};
+
+export type SignUpType = {...};
+
+export type UserType = {...};
+
+type AuthContextType = {
+  isAuthenticated: boolean;
+  user: UserType | undefined;
+  signIn: ({ email, password }: SignInType) => Promise<void>;
+  signUp: ({ email, name, password }: SignUpType) => Promise<void>;
+};
+
+export const AuthContext = createContext({} as AuthContextType);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<UserType | undefined>();
+  const isAuthenticated = !!user;
+
+  async function signIn({ email, password }: SignInType) {
+    const { access_token, user } = await loginUser({ email, password });
+
+    setCookie(undefined, "jack_token", access_token, {
+      maxAge: 60 * 60 * 1, // 1 hour
+    });
+    setUser(user);
   }
+
+  async function signUp({ email, name, password } : SignUpType) {
+    await createUser({ email, password, name});
+  }
+
+  useEffect(() => {
+    const { jack_token: token } = parseCookies();
+
+    if (token) {
+      (async () => {
+        const userData = await getUser();
+        setUser(userData);
+      })();
+    }
+  }, []);
+
+  return (
+    <AuthContext.Provider value={{ isAuthenticated, user, signIn, signUp }}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
 ```
-
-Aqui podemos destacar os responsáveis pelo processo de autenticação os "imports", "controllers" e "providers" no Auth.module:
-* Imports
-    - UserModule: Onde contém a lógica para acessar e gerenciar os dados do usuário.
-    - PassportModule: Integra o framework de autenticação Passport.js, que simplifica a autenticação em aplicações Node.js.
-    - JwtModule: Configura o uso de JWT (JSON Web Token), permitindo que tokens sejam gerados e verificados. O JwtModule.register define o segredo (secret) para assinar os tokens e a validade padrão do token (expiresIn: '30d'), que é de 30 dias (exemplo apenas para teste).
-
-* Controllers
-    - AuthController: Define a rota de login
-
-* Providers
-    - AuthService: Contém a lógica central de autenticação, como verificar credenciais e gerar tokens JWT.
-    - LocalStrategy: Lida com autenticação por email e senha do usuário.
-    - JwtStrategy: Verifica se o token JWT enviado pelo cliente é válido e autoriza o acesso às rotas protegidas.
-
-Também foi essencial garantir a segurança dos dados sensíveis, utilizando algoritmos de criptografia e técnicas de hashing para armazenar senhas de forma segura.
-
-Veja mais detalhes da implementação neste artigo [aqui](https://fabricadesinapse.gitbook.io/sinapse-book/nestjs/autenticacao-sistema-de-login-com-token-jwt)
+AuthProvider é responsável pelo gerenciamento de autenticação, permitindo que os componentes filhos tenham acesso fácil a informações e funções relacionadas à autenticação do usuário.
 </br>
 
-
 ## Rodando o projeto
-
-![#](./public/desktop.gif)
 
 ### Pré-requisitos:
 Certifique-se de que o Docker está instalado em sua máquina antes de prosseguir.
@@ -194,7 +197,6 @@ Se desejar verificar a API acesse o endereço:
 ```bash
 http://localhost:3000/api
 ``` 
--->
 
 ## Autor
 
